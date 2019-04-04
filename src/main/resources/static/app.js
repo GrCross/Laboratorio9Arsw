@@ -13,10 +13,9 @@ var app = (function () {
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         ctx.beginPath();
-        ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+        ctx.arc(point.x, point.y, 10, 0, 2 * Math.PI);
         ctx.stroke();
-    };
-    
+    };    
     
     var getMousePosition = function (evt) {
         canvas = document.getElementById("canvas");
@@ -31,7 +30,6 @@ var app = (function () {
         stompClient.send('/topic/newpoint', {}, JSON.stringify(pt));
     };
 
-
     var connectAndSubscribe = function () {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
@@ -41,21 +39,24 @@ var app = (function () {
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
-                alert(eventbody);
+                //alert(eventbody);
                 var pointReceive = JSON.parse(eventbody.body);
                 addPointToCanvas(pointReceive);
             });
         });
-
     };
-    
-    
+
+    var doMousedown = function(event){
+        var pos = getMousePosition(event);
+        var newPoint = new Point(pos.x,pos.y);
+        sendPoint(newPoint);
+    };   
 
     return {
 
         init: function () {
             var can = document.getElementById("canvas");
-            
+            can.addEventListener("mousedown",doMousedown,false);
             //websocket connection
             connectAndSubscribe();
         },
