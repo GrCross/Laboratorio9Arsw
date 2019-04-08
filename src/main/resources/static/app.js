@@ -9,6 +9,8 @@ var app = (function () {
     
     var stompClient = null;
 
+    var idTopic = null;
+
     var addPointToCanvas = function (point) {        
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
@@ -27,7 +29,7 @@ var app = (function () {
     };
 
     var sendPoint = function (pt) {
-        stompClient.send('/topic/newpoint', {}, JSON.stringify(pt));
+        stompClient.send('/topic/newpoint.'+idTopic, {}, JSON.stringify(pt));
     };
 
     var connectAndSubscribe = function () {
@@ -38,7 +40,7 @@ var app = (function () {
         //subscribe to /topic/newpoint when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/newpoint', function (eventbody) {
+            stompClient.subscribe('/topic/newpoint.'+idTopic, function (eventbody) {
                 //alert(eventbody);
                 var pointReceive = JSON.parse(eventbody.body);
                 addPointToCanvas(pointReceive);
@@ -58,6 +60,7 @@ var app = (function () {
             var can = document.getElementById("canvas");
             can.addEventListener("mousedown",doMousedown,false);
             //websocket connection
+            idTopic = $("#topicDibujo").val();
             connectAndSubscribe();
         },
 
