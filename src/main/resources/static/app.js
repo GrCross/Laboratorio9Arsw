@@ -17,7 +17,22 @@ var app = (function () {
         ctx.beginPath();
         ctx.arc(point.x, point.y, 10, 0, 2 * Math.PI);
         ctx.stroke();
-    };    
+    };  
+    
+    var addPolygonToCanvas = function(polygon){
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = '#f00';
+        ctx.beginPath();
+
+        ctx.moveTo(polygon.points[0].x, polygon.points[0].y);
+        for (let i = 0; i < polygon.points.length; i++) {
+            
+            ctx.lineTo(parseInt(polygon.points[i].x), parseInt(polygon.points[i].y));
+        }
+        ctx.closePath();
+        ctx.fill();
+    };
     
     var getMousePosition = function (evt) {
         canvas = document.getElementById("canvas");
@@ -45,6 +60,12 @@ var app = (function () {
                 //alert(eventbody);
                 var pointReceive = JSON.parse(eventbody.body);
                 addPointToCanvas(pointReceive);
+            });
+
+            stompClient.subscribe('/topic/newpolygon.'+idTopic,function(eventbody){
+                console.log(eventbody);
+                var polygonReceive = JSON.parse(eventbody.body);
+                addPolygonToCanvas(polygonReceive);
             });
         });
     };
