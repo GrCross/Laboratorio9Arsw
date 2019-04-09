@@ -29,7 +29,8 @@ var app = (function () {
     };
 
     var sendPoint = function (pt) {
-        stompClient.send('/topic/newpoint.'+idTopic, {}, JSON.stringify(pt));
+        console.log("Voy a enviar el punto "+pt);
+        stompClient.send('/app/newpoint.'+idTopic, {}, JSON.stringify(pt));
     };
 
     var connectAndSubscribe = function () {
@@ -57,11 +58,14 @@ var app = (function () {
     return {
 
         init: function () {
-            var can = document.getElementById("canvas");
-            can.addEventListener("mousedown",doMousedown,false);
             //websocket connection
             idTopic = $("#topicDibujo").val();
             connectAndSubscribe();
+        },
+
+        initListener: function () {
+            var can = document.getElementById("canvas");
+            can.addEventListener("mousedown",doMousedown,false);
         },
 
         publishPoint: function(px,py){
