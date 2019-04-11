@@ -64,6 +64,12 @@ var app = (function () {
                 var pointsReceive = JSON.parse(eventbody.body);
                 addPolygonToCanvas(pointsReceive);
             });
+
+            stompClient.subscribe('/topic/newpolygon.'+idTopic,function(eventbody){
+                console.log(eventbody);
+                var polygonReceive = JSON.parse(eventbody.body);
+                addPolygonToCanvas(polygonReceive);
+            });
         });
     };
 
